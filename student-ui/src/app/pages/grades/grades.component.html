@@ -1,7 +1,6 @@
 <div class="container">
 <h2 class="page-title">Оценки</h2>
 
-<!-- Форма добавления (только преподавателю) -->
 <form *ngIf="isProfessor" (ngSubmit)="addGrade()" class="form">
   <select [(ngModel)]="studentId" name="studentId" required>
     <option value="">Выберите студента</option>
@@ -17,7 +16,6 @@
   <button type="submit">Поставить оценку</button>
 </form>
 
-<!-- Список оценок -->
 <div class="assignment-list">
   <div class="assignment-item" *ngFor="let g of grades">
     <div>
