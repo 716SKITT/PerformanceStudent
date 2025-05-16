@@ -1,0 +1,34 @@
+<div class="container">
+<h2 class="page-title">Оценки</h2>
+
+<!-- Форма добавления (только преподавателю) -->
+<form *ngIf="isProfessor" (ngSubmit)="addGrade()" class="form">
+  <select [(ngModel)]="studentId" name="studentId" required>
+    <option value="">Выберите студента</option>
+    <option *ngFor="let s of students" [value]="s.id">{{ s.lastName }} {{ s.firstName }}</option>
+  </select>
+
+  <select [(ngModel)]="assignmentId" name="assignmentId" required>
+    <option value="">Выберите задание</option>
+    <option *ngFor="let a of assignments" [value]="a.id">{{ a.title }}</option>
+  </select>
+
+  <input [(ngModel)]="score" name="score" type="number" placeholder="Оценка" required />
+  <button type="submit">Поставить оценку</button>
+</form>
+
+<!-- Список оценок -->
+<div class="assignment-list">
+  <div class="assignment-item" *ngFor="let g of grades">
+    <div>
+      <strong>{{ getAssignmentTitle(g.assignmentId) }}</strong>
+      <div class="meta">
+  <span *ngIf="isProfessor">Студент: {{ getStudentName(g.studentId) }} · </span>
+  <span *ngIf="g.assignment">Дата сдачи: {{ g.assignment.dueDate | date:'longDate' }}</span>
+</div>
+
+      <p class="desc">Оценка: {{ g.score }}</p>
+    </div>
+  </div>
+</div>
+</div>
