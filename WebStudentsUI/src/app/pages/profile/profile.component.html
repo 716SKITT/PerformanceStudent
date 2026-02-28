@@ -1,0 +1,60 @@
+<div class="container">
+  <h2 class="page-title">Профиль пользователя</h2>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <section class="card" *ngIf="user">
+    <h3>Учетная запись</h3>
+    <div class="grid">
+      <p><span>Логин:</span> {{ user.username }}</p>
+      <p><span>Роль:</span> {{ roleLabel(user.role) }}</p>
+      <p><span>Связанный ID:</span> {{ user.linkedPersonId || '—' }}</p>
+    </div>
+  </section>
+
+  <section class="card" *ngIf="isStudent && student">
+    <h3>Данные студента</h3>
+    <div class="grid">
+      <p><span>ФИО:</span> {{ student.lastName }} {{ student.firstName }}</p>
+      <p><span>Пол:</span> {{ genderLabel(student.gender) }}</p>
+      <p><span>Дата рождения:</span> {{ student.dateOfBirth | date:'longDate' }}</p>
+      <p><span>Группа:</span> {{ student.studentGroup?.name || 'Не назначена' }}</p>
+      <p><span>Дата зачисления:</span> {{ student.enrollmentDate | date:'longDate' }}</p>
+    </div>
+
+    <div class="sub-card" *ngIf="studentSummary">
+      <h4>Итоговые результаты</h4>
+      <p *ngIf="studentSummary.finals.length === 0" class="muted">Итоговые оценки пока не опубликованы.</p>
+      <ul *ngIf="studentSummary.finals.length > 0">
+        <li *ngFor="let f of studentSummary.finals">
+          {{ f.disciplineName }} · семестр {{ f.semesterNumber }} · {{ f.finalMark || '—' }}
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card" *ngIf="isProfessor && professor">
+    <h3>Данные преподавателя</h3>
+    <div class="grid">
+      <p><span>ФИО:</span> {{ professor.lastName }} {{ professor.firstName }}</p>
+      <p><span>Пол:</span> {{ genderLabel(professor.gender) }}</p>
+      <p><span>Дата рождения:</span> {{ professor.dateOfBirth | date:'longDate' }}</p>
+      <p><span>Дата приема:</span> {{ professor.enrollmentDate | date:'longDate' }}</p>
+    </div>
+
+    <div class="sub-card">
+      <h4>Мои дисциплины и группы</h4>
+      <p *ngIf="professorOfferings.length === 0" class="muted">Назначений пока нет.</p>
+      <ul *ngIf="professorOfferings.length > 0">
+        <li *ngFor="let o of professorOfferings">
+          {{ o.discipline?.name || 'Дисциплина' }} · {{ o.studentGroup?.name || 'Группа' }} · семестр {{ o.semester?.number }}
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card" *ngIf="isAdmin">
+    <h3>Профиль администратора</h3>
+    <p class="muted">Администратор управляет структурой обучения, пользователями и доступами.</p>
+  </section>
+</div>

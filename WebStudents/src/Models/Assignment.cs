@@ -16,9 +16,13 @@ public class Assignment
     [Required]
     public DateTime DueDate { get; set; }
 
-    [Required]
-    public int CourseId { get; set; }
+    public int? CourseId { get; set; }
 
     [ForeignKey("CourseId")]
     public Course? Course { get; set; }
+
+    public Guid? DisciplineOfferingId { get; set; }
+
+    [ForeignKey(nameof(DisciplineOfferingId))]
+    public DisciplineOffering? DisciplineOffering { get; set; }
 }

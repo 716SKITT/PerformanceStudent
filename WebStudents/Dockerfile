@@ -1,12 +1,17 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0
-WORKDIR /app
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+COPY WebStudents.csproj ./
+RUN dotnet restore WebStudents.csproj
+
 COPY . .
+RUN dotnet publish WebStudents.csproj -c Release -o /app/publish /p:UseAppHost=false
 
-RUN dotnet tool install --global dotnet-ef
-ENV PATH="${PATH}:/root/.dotnet/tools"
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
 
-RUN dotnet restore
+COPY --from=build /app/publish .
 
 EXPOSE 5006
 
-CMD ["sh", "-c", "dotnet ef database update && dotnet run --project WebStudents.csproj"]
+ENTRYPOINT ["dotnet", "WebStudents.dll"]

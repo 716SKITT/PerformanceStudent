@@ -1,0 +1,60 @@
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #dbe7ff;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: 110px minmax(220px, 360px);
+  gap: 0.7rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.toolbar label {
+  font-weight: 600;
+  color: #334155;
+}
+
+.list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.student-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr 1fr 0.6fr 1.4fr;
+  padding: 0.75rem 1rem;
+  background-color: white;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.student-header {
+  font-weight: 700;
+}
+
+@media (max-width: 960px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .student-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem 0.8rem;
+  }
+}

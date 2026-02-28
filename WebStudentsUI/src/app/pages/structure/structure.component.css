@@ -1,0 +1,210 @@
+.card {
+  background: #fff;
+  border: 1px solid #dbe7ff;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.tabs button {
+  background: #f1f5ff;
+  color: #1d4ed8;
+  border: 1px solid #dbe7ff;
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  font-weight: 600;
+}
+
+.tabs button.active {
+  background: #1d4ed8;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+
+.section-head h3 {
+  margin: 0;
+}
+
+.plan-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+}
+
+.secondary {
+  background: #eef4ff;
+  color: #1e40af;
+  border: 1px solid #dbe7ff;
+}
+
+.secondary:hover {
+  background: #dbeafe;
+}
+
+.inline-form {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+  border: 1px solid #e0ebff;
+  background: #f8fbff;
+  border-radius: 10px;
+  padding: 0.65rem;
+}
+
+.inline-form {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.inline-form.short {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.inline-form.compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.calendar-block {
+  border: 1px solid #e6efff;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e6efff;
+  text-align: left;
+  padding: 0.55rem;
+  vertical-align: middle;
+}
+
+thead th {
+  background: #f2f7ff;
+}
+
+.col-actions {
+  width: 120px;
+}
+
+.actions {
+  text-align: right;
+}
+
+.actions button {
+  padding: 0.33rem 0.66rem;
+  border-radius: 7px;
+}
+
+button.danger {
+  background: transparent;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  font-weight: 500;
+}
+
+button.danger:hover {
+  background: #fff1f2;
+  border-color: #fda4af;
+  color: #9f1239;
+}
+
+button.danger-solid {
+  background: #dc2626;
+  color: #fff;
+}
+
+button.danger-solid:hover {
+  background: #b91c1c;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.empty,
+.readonly-note {
+  color: #64748b;
+}
+
+.error {
+  color: #b91c1c;
+  margin-bottom: 0.8rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 120;
+}
+
+.modal {
+  background: #fff;
+  width: min(440px, calc(100vw - 2rem));
+  border-radius: 12px;
+  border: 1px solid #dbe7ff;
+  padding: 1rem;
+}
+
+.modal h4 {
+  margin-bottom: 0.4rem;
+}
+
+.modal p {
+  color: #334155;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+}
+
+@media (max-width: 980px) {
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .plan-filters,
+  .calendar-grid,
+  .inline-form,
+  .inline-form.short,
+  .inline-form.compact {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    text-align: left;
+  }
+}

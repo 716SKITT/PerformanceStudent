@@ -1,0 +1,51 @@
+<div class="container">
+  <h2 class="page-title">Посещаемость</h2>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="card controls">
+    <label>Назначение дисциплины</label>
+    <select [(ngModel)]="selectedOfferingId" (change)="loadStudents(); loadAttendance()">
+      <option value="">Все</option>
+      <option *ngFor="let o of offerings" [value]="o.id">{{ offeringLabel(o) }}</option>
+    </select>
+
+    <label *ngIf="isProfessor">Студент</label>
+    <select *ngIf="isProfessor" [(ngModel)]="selectedStudentId" (change)="loadAttendance()">
+      <option value="">Все студенты</option>
+      <option *ngFor="let s of students" [value]="s.id">{{ s.lastName }} {{ s.firstName }}</option>
+    </select>
+  </div>
+
+  <form *ngIf="isProfessor" class="card mark-form" (ngSubmit)="markAttendance()">
+    <select [(ngModel)]="selectedStudentId" name="selectedStudentId" required>
+      <option value="">Выберите студента</option>
+      <option *ngFor="let s of students" [value]="s.id">{{ s.lastName }} {{ s.firstName }}</option>
+    </select>
+
+    <input type="date" [(ngModel)]="attendanceDate" name="attendanceDate" required />
+
+    <select [(ngModel)]="isPresent" name="isPresent" required>
+      <option [ngValue]="true">Присутствовал</option>
+      <option [ngValue]="false">Отсутствовал</option>
+    </select>
+
+    <button type="submit">Отметить</button>
+  </form>
+
+  <div class="attendance-list" *ngIf="attendance.length > 0">
+    <div class="attendance-row attendance-header">
+      <span>Студент</span>
+      <span>Дата</span>
+      <span>Статус</span>
+    </div>
+
+    <div class="attendance-row" *ngFor="let a of attendance">
+      <span>{{ getStudentName(a.studentId) }}</span>
+      <span>{{ a.date | date: 'longDate' }}</span>
+      <span [ngClass]="a.isPresent ? 'present' : 'absent'">
+        {{ a.isPresent ? 'Присутствовал' : 'Отсутствовал' }}
+      </span>
+    </div>
+  </div>
+</div>

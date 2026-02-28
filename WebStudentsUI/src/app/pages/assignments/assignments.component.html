@@ -1,0 +1,31 @@
+<div class="container">
+  <h2 class="page-title">Задания</h2>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="toolbar card">
+    <label>Назначение дисциплины</label>
+    <select [(ngModel)]="selectedOfferingId" (change)="loadAssignments()">
+      <option value="">Все</option>
+      <option *ngFor="let o of offerings" [value]="o.id">{{ offeringLabel(o) }}</option>
+    </select>
+  </div>
+
+  <form *ngIf="isProfessor" (ngSubmit)="addAssignment()" class="form card">
+    <input [(ngModel)]="title" name="title" placeholder="Название задания" required />
+    <input [(ngModel)]="description" name="description" placeholder="Описание" />
+    <input [(ngModel)]="dueDate" name="dueDate" type="date" required />
+    <button type="submit">Добавить</button>
+  </form>
+
+  <div class="assignment-list">
+    <div class="assignment-item card" *ngFor="let a of assignments">
+      <div>
+        <strong>{{ a.title }}</strong>
+        <div class="meta">{{ a.dueDate | date:'longDate' }}</div>
+        <p class="desc">{{ a.description || '—' }}</p>
+      </div>
+      <button *ngIf="isProfessor" (click)="deleteAssignment(a.id)">Удалить</button>
+    </div>
+  </div>
+</div>

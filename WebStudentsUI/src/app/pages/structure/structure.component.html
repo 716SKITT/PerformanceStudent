@@ -1,0 +1,276 @@
+<div class="container">
+  <h2 class="page-title">Структура обучения</h2>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="tabs">
+    <button [class.active]="activeSection === 'plans'" (click)="setSection('plans')">Планы групп</button>
+    <button [class.active]="activeSection === 'offerings'" (click)="setSection('offerings')">Назначения</button>
+    <button [class.active]="activeSection === 'groups'" (click)="setSection('groups')">Группы</button>
+    <button [class.active]="activeSection === 'disciplines'" (click)="setSection('disciplines')">Дисциплины</button>
+    <button [class.active]="activeSection === 'calendar'" (click)="setSection('calendar')">Календарь</button>
+  </div>
+
+  <p class="readonly-note" *ngIf="!isAdmin">Режим просмотра. Управление доступно администратору.</p>
+
+  <section class="card" *ngIf="activeSection === 'plans'">
+    <div class="section-head">
+      <h3>Учебный план по группе</h3>
+    </div>
+
+    <div class="plan-filters">
+      <select [(ngModel)]="selectedPlanGroupId">
+        <option value="">Все группы</option>
+        <option *ngFor="let g of sortedGroups()" [value]="g.id">{{ g.name }} · {{ g.studyYear }} курс</option>
+      </select>
+
+      <select [(ngModel)]="planAcademicYearFilterId">
+        <option value="">Все учебные годы</option>
+        <option *ngFor="let y of sortedYears()" [value]="y.id">{{ y.startYear }}/{{ y.endYear }}</option>
+      </select>
+
+      <select [(ngModel)]="planSemesterFilter">
+        <option value="">Оба семестра</option>
+        <option value="1">Семестр 1</option>
+        <option value="2">Семестр 2</option>
+      </select>
+    </div>
+
+    <p class="empty" *ngIf="filteredPlanRows().length === 0">По выбранным фильтрам ничего не найдено.</p>
+
+    <table *ngIf="filteredPlanRows().length > 0">
+      <thead>
+        <tr>
+          <th>Группа</th>
+          <th>Дисциплина</th>
+          <th>Контроль</th>
+          <th>Семестр</th>
+          <th>Преподаватель</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of filteredPlanRows()">
+          <td>{{ item.studentGroup?.name }}</td>
+          <td>{{ item.discipline?.name }}</td>
+          <td>{{ controlTypeLabel(item.discipline?.controlType ?? 0) }}</td>
+          <td>№{{ item.semester?.number }} · {{ item.semester?.academicYear?.startYear }}/{{ item.semester?.academicYear?.endYear }}</td>
+          <td>{{ item.proffessor?.lastName }} {{ item.proffessor?.firstName }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card" *ngIf="activeSection === 'offerings'">
+    <div class="section-head">
+      <h3>Назначения дисциплин</h3>
+      <button *ngIf="isAdmin" class="secondary" (click)="showOfferingForm = !showOfferingForm">{{ showOfferingForm ? 'Скрыть форму' : 'Добавить назначение' }}</button>
+    </div>
+
+    <form class="inline-form" *ngIf="isAdmin && showOfferingForm" (ngSubmit)="addOffering()">
+      <select [(ngModel)]="offeringDisciplineId" name="offeringDisciplineId" required>
+        <option value="">Дисциплина</option>
+        <option *ngFor="let d of sortedDisciplines()" [value]="d.id">{{ d.name }}</option>
+      </select>
+
+      <select [(ngModel)]="offeringSemesterId" name="offeringSemesterId" required>
+        <option value="">Семестр</option>
+        <option *ngFor="let s of sortedSemesters()" [value]="s.id">№{{ s.number }} · {{ academicYearLabel(s.academicYearId) }}</option>
+      </select>
+
+      <select [(ngModel)]="offeringGroupId" name="offeringGroupId" required>
+        <option value="">Группа</option>
+        <option *ngFor="let g of sortedGroups()" [value]="g.id">{{ g.name }}</option>
+      </select>
+
+      <select [(ngModel)]="offeringProfessorId" name="offeringProfessorId" required>
+        <option value="">Преподаватель</option>
+        <option *ngFor="let p of professors" [value]="p.id">{{ p.lastName }} {{ p.firstName }}</option>
+      </select>
+
+      <button type="submit">Сохранить</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Дисциплина</th>
+          <th>Семестр</th>
+          <th>Группа</th>
+          <th>Преподаватель</th>
+          <th class="col-actions" *ngIf="isAdmin">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let o of sortedOfferings()">
+          <td>{{ o.discipline?.name }}</td>
+          <td>№{{ o.semester?.number }} · {{ o.semester?.academicYear?.startYear }}/{{ o.semester?.academicYear?.endYear }}</td>
+          <td>{{ o.studentGroup?.name }}</td>
+          <td>{{ o.proffessor?.lastName }} {{ o.proffessor?.firstName }}</td>
+          <td class="actions" *ngIf="isAdmin">
+            <button class="danger" [disabled]="isDeleting('offering-' + o.id)" (click)="deleteOffering(o.id)">Удалить</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card" *ngIf="activeSection === 'groups'">
+    <div class="section-head">
+      <h3>Группы</h3>
+      <button *ngIf="isAdmin" class="secondary" (click)="showGroupForm = !showGroupForm">{{ showGroupForm ? 'Скрыть форму' : 'Добавить группу' }}</button>
+    </div>
+
+    <form class="inline-form short" *ngIf="isAdmin && showGroupForm" (ngSubmit)="addGroup()">
+      <input [(ngModel)]="groupName" name="groupName" placeholder="Название" required />
+      <input type="number" [(ngModel)]="groupStudyYear" name="groupStudyYear" placeholder="Курс" required />
+      <select [(ngModel)]="groupAcademicYearId" name="groupAcademicYearId" required>
+        <option value="">Учебный год</option>
+        <option *ngFor="let y of sortedYears()" [value]="y.id">{{ y.startYear }}/{{ y.endYear }}</option>
+      </select>
+      <button type="submit">Сохранить</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Группа</th>
+          <th>Курс</th>
+          <th>Учебный год</th>
+          <th class="col-actions" *ngIf="isAdmin">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let g of sortedGroups()">
+          <td>{{ g.name }}</td>
+          <td>{{ g.studyYear }}</td>
+          <td>{{ academicYearLabel(g.academicYearId) }}</td>
+          <td class="actions" *ngIf="isAdmin">
+            <button class="danger" [disabled]="isDeleting('group-' + g.id)" (click)="deleteGroup(g.id, g.name)">Удалить</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card" *ngIf="activeSection === 'disciplines'">
+    <div class="section-head">
+      <h3>Дисциплины</h3>
+      <button *ngIf="isAdmin" class="secondary" (click)="showDisciplineForm = !showDisciplineForm">{{ showDisciplineForm ? 'Скрыть форму' : 'Добавить дисциплину' }}</button>
+    </div>
+
+    <form class="inline-form short" *ngIf="isAdmin && showDisciplineForm" (ngSubmit)="addDiscipline()">
+      <input [(ngModel)]="disciplineName" name="disciplineName" placeholder="Название" required />
+      <input type="number" [(ngModel)]="disciplineHours" name="disciplineHours" placeholder="Часы" required />
+      <select [(ngModel)]="disciplineControlType" name="disciplineControlType" required>
+        <option [ngValue]="0">Экзамен</option>
+        <option [ngValue]="1">Зачет</option>
+        <option [ngValue]="2">Дифференцированный зачет</option>
+      </select>
+      <button type="submit">Сохранить</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Название</th>
+          <th>Часы</th>
+          <th>Контроль</th>
+          <th class="col-actions" *ngIf="isAdmin">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of sortedDisciplines()">
+          <td>{{ d.name }}</td>
+          <td>{{ d.hours }}</td>
+          <td>{{ controlTypeLabel(d.controlType) }}</td>
+          <td class="actions" *ngIf="isAdmin">
+            <button class="danger" [disabled]="isDeleting('discipline-' + d.id)" (click)="deleteDiscipline(d.id, d.name)">Удалить</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card" *ngIf="activeSection === 'calendar'">
+    <div class="calendar-grid">
+      <div class="calendar-block">
+        <div class="section-head">
+          <h3>Учебные годы</h3>
+          <button *ngIf="isAdmin" class="secondary" (click)="showYearForm = !showYearForm">{{ showYearForm ? 'Скрыть форму' : 'Добавить учебный год' }}</button>
+        </div>
+
+        <form class="inline-form compact" *ngIf="isAdmin && showYearForm" (ngSubmit)="addYear()">
+          <input type="number" [(ngModel)]="yearStart" name="yearStart" placeholder="Начало" required />
+          <input type="number" [(ngModel)]="yearEnd" name="yearEnd" placeholder="Окончание" required />
+          <button type="submit">Сохранить</button>
+        </form>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Период</th>
+              <th class="col-actions" *ngIf="isAdmin">Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let y of sortedYears()">
+              <td>{{ y.startYear }} / {{ y.endYear }}</td>
+              <td class="actions" *ngIf="isAdmin">
+                <button class="danger" [disabled]="isDeleting('year-' + y.id)" (click)="deleteAcademicYear(y.id, y.startYear + '/' + y.endYear)">Удалить</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="calendar-block">
+        <div class="section-head">
+          <h3>Семестры</h3>
+          <button *ngIf="isAdmin" class="secondary" (click)="showSemesterForm = !showSemesterForm">{{ showSemesterForm ? 'Скрыть форму' : 'Добавить семестр' }}</button>
+        </div>
+
+        <form class="inline-form compact" *ngIf="isAdmin && showSemesterForm" (ngSubmit)="addSemester()">
+          <select [(ngModel)]="semesterAcademicYearId" name="semesterAcademicYearId" required>
+            <option value="">Учебный год</option>
+            <option *ngFor="let y of sortedYears()" [value]="y.id">{{ y.startYear }}/{{ y.endYear }}</option>
+          </select>
+          <select [(ngModel)]="semesterNumber" name="semesterNumber" required>
+            <option [ngValue]="1">1</option>
+            <option [ngValue]="2">2</option>
+          </select>
+          <button type="submit">Сохранить</button>
+        </form>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Семестр</th>
+              <th>Учебный год</th>
+              <th class="col-actions" *ngIf="isAdmin">Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of sortedSemesters()">
+              <td>№{{ s.number }}</td>
+              <td>{{ academicYearLabel(s.academicYearId) }}</td>
+              <td class="actions" *ngIf="isAdmin">
+                <button class="danger" [disabled]="isDeleting('semester-' + s.id)" (click)="deleteSemester(s.id)">Удалить</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-backdrop" *ngIf="confirmOpen" (click)="closeConfirm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h4>{{ confirmTitle }}</h4>
+      <p>{{ confirmText }}</p>
+      <div class="modal-actions">
+        <button class="secondary" (click)="closeConfirm()">Отмена</button>
+        <button class="danger-solid" (click)="proceedConfirm()">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>

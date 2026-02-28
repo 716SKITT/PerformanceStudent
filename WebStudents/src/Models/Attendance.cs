@@ -19,4 +19,9 @@ public class Attendance
 
     [Required]
     public bool IsPresent { get; set; }
+
+    public Guid? DisciplineOfferingId { get; set; }
+
+    [ForeignKey(nameof(DisciplineOfferingId))]
+    public DisciplineOffering? DisciplineOffering { get; set; }
 }
