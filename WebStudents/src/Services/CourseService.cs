@@ -3,6 +3,7 @@ using StudentsPerformance.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebStudents.src.Services;
+
 public class CourseService
 {
     private readonly StudentDbContext _context;

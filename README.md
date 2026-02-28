@@ -10,7 +10,7 @@
   - backend unit tests: `dotnet test`
 
 ## Отчет по релизу
-
+ 
 Блок ниже обновляется автоматически при публикации GitHub Release workflow-ом `release-report`.
 
 <!-- RELEASE_REPORT_START -->

@@ -2,6 +2,7 @@ using WebStudents.src.EF;
 using StudentsPerformance.Models;
 
 namespace WebStudents.src.Services;
+
 public class AuthService
 {
     private readonly StudentDbContext _context;
