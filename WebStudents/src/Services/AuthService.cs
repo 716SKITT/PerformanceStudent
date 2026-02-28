@@ -17,8 +17,17 @@ public class AuthService
         return _context.UserAccounts.FirstOrDefault(u => u.Username == username && u.PasswordHash == hash);
     }
 
+    public bool HasAnyUsers()
+    {
+        return _context.UserAccounts.Any();
+    }
+
     public void Register(UserAccount user)
     {
+        if (user.Id == Guid.Empty)
+        {
+            user.Id = Guid.NewGuid();
+        }
         _context.UserAccounts.Add(user);
         _context.SaveChanges();
     }

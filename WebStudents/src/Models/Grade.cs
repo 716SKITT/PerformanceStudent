@@ -23,4 +23,9 @@ public class Grade
     [Required]
     [Range(0, 100)]
     public double Score { get; set; }
+
+    public Guid? DisciplineOfferingId { get; set; }
+
+    [ForeignKey(nameof(DisciplineOfferingId))]
+    public DisciplineOffering? DisciplineOffering { get; set; }
 }

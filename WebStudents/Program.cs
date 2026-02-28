@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using Prometheus;
+using System.Text.Json.Serialization;
 using WebStudents.src.EF;
 using WebStudents.src.Services;
 
@@ -16,8 +18,21 @@ builder.Services.AddScoped<AttendanceService>();
 builder.Services.AddScoped<AssignmentService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<AcademicYearService>();
+builder.Services.AddScoped<SemesterService>();
+builder.Services.AddScoped<StudentGroupService>();
+builder.Services.AddScoped<DisciplineService>();
+builder.Services.AddScoped<DisciplineOfferingService>();
+builder.Services.AddScoped<GradeSheetService>();
+builder.Services.AddScoped<FinalGradeService>();
+builder.Services.AddScoped<AccessPolicyService>();
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -34,10 +49,15 @@ builder.Services.AddCors(options =>
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(5006);
-    options.ListenAnyIP(4200);
-    
 });
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();
+    db.Database.Migrate();
+    DbSeeder.Seed(db);
+}
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -58,7 +78,9 @@ app.UseStaticFiles();
 app.UseCors("AllowFrontend");
 
 app.UseRouting();
+app.UseHttpMetrics();
 
 app.MapControllers();
+app.MapMetrics("/metrics");
 
 app.Run();

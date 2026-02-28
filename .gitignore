@@ -1,0 +1,20 @@
+# Secrets / local env
+.env
+.env.local
+ARCHIVE.md
+# .NET build artifacts
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# Node / Angular
+**/node_modules/
+**/.angular/
+**/dist/
+**/.cache/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store

@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using WebStudents.src.Services;
 using StudentsPerformance.Models;
 using WebStudents.Dtos;
+using WebStudents.src.Auth;
+using WebStudents.src.Services;
 
 namespace WebStudents.src.Controllers;
 
@@ -22,12 +23,20 @@ public class AuthController : ControllerBase
         var user = _authService.Authenticate(dto.Username, dto.Password);
         if (user == null) return Unauthorized("Неверные данные");
 
-        return Ok(new { user.Username, user.Role, user.LinkedPersonId });
+        return Ok(new { user.Id, user.Username, user.Role, user.LinkedPersonId });
     }
 
     [HttpPost("register")]
     public IActionResult Register([FromBody] RegisterDto dto)
     {
+        var currentUser = this.GetUserContext();
+        var anyUsers = _authService.HasAnyUsers();
+
+        if (anyUsers && !currentUser.IsInRole("Admin"))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = "Регистрация доступна только Admin" });
+        }
+
         var user = new UserAccount
         {
             Username = dto.Username,
@@ -37,6 +46,6 @@ public class AuthController : ControllerBase
         };
 
         _authService.Register(user);
-        return Ok();
+        return Ok(new { user.Id, user.Username, user.Role, user.LinkedPersonId });
     }
 }

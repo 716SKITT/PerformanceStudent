@@ -1,0 +1,19 @@
+<nav class="navbar" *ngIf="auth.isLoggedIn()">
+  <a class="logo" routerLink="/journal">WebStudents</a>
+
+  <div class="nav-center">
+    <a routerLink="/journal" routerLinkActive="active">Журнал</a>
+    <a routerLink="/assignments" routerLinkActive="active" *ngIf="isProfessor || isStudent">Задания</a>
+    <a routerLink="/grades" routerLinkActive="active" *ngIf="isProfessor || isStudent">Оценки</a>
+    <a routerLink="/attendance" routerLinkActive="active" *ngIf="isProfessor || isStudent">Посещаемость</a>
+    <a routerLink="/structure" routerLinkActive="active" *ngIf="isAdmin">Структура</a>
+    <a routerLink="/grade-sheets" routerLinkActive="active" *ngIf="isProfessor">Ведомости</a>
+    <a routerLink="/student-finals" routerLinkActive="active" *ngIf="isStudent">Итоги</a>
+    <a routerLink="/profile" routerLinkActive="active">Профиль</a>
+  </div>
+
+  <div class="nav-right">
+    <span class="username">{{ auth.getUser()?.username }}</span>
+    <button (click)="logout()">Выйти</button>
+  </div>
+</nav>

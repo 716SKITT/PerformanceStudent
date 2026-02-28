@@ -1,58 +1,70 @@
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:18
     environment:
-      POSTGRES_USER: student_admin
-      POSTGRES_PASSWORD: 69*@dminPG
-      POSTGRES_DB: student_db
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U student_admin -d student_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@localhost.com
-      PGADMIN_DEFAULT_PASSWORD: passPG1129
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL}"
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD}"
     ports:
-      - "5050:80"
+      - "${PGADMIN_PORT:-5050}:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    restart: unless-stopped
 
   backend:
     build:
       context: ./WebStudents
     ports:
-      - "5006:5006"
+      - "${API_PORT:-5006}:5006"
     environment:
-      ASPNETCORE_URLS: http://+:5006
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Username=student_admin;Password=69*@dminPG;Database=student_db
+      ASPNETCORE_URLS: "http://+:5006"
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT:-Development}"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Database=${POSTGRES_DB}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  datainstall:
+    image: postgres:18
+    profiles: ["tools"]
+    environment:
+      PGPASSWORD: "${POSTGRES_PASSWORD}"
+    volumes:
+      - ./db/datainstall.sql:/sql/datainstall.sql:ro
+    command: >
+      sh -c "psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -v ON_ERROR_STOP=1 -f /sql/datainstall.sql"
     depends_on:
       postgres:
         condition: service_healthy
 
-
-
   frontend:
     build:
-      context: ./student-ui
+      context: ./WebStudentsUI
       dockerfile: Dockerfile
     ports:
-      - "4200:4200"
-    volumes:
-      - ./student-ui:/app:cached
-      - /app/node_modules
-    command: npm run start
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+      - "${FRONTEND_PORT:-4200}:4200"
     depends_on:
       - backend
+    restart: unless-stopped
 
 volumes:
   pgdata:

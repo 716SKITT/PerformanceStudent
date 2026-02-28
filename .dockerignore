@@ -1,5 +1,13 @@
-/node_modules
-node_modules
+.git
+.gitignore
+.env
+.env.local
 **/bin
 **/obj
 **/.vs
+**/.idea
+**/node_modules
+**/.angular
+**/dist
+**/.cache
+nginx

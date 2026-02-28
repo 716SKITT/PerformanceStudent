@@ -1,0 +1,36 @@
+<div class="container">
+  <h2 class="page-title">Итоговые результаты</h2>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="card" *ngIf="summary">
+    <h3>{{ summary.fullName }}</h3>
+
+    <div *ngIf="summary.finals.length === 0" class="empty">
+      Итоговые оценки пока не опубликованы.
+    </div>
+
+    <table *ngIf="summary.finals.length > 0">
+      <thead>
+        <tr>
+          <th>Дисциплина</th>
+          <th>Семестр</th>
+          <th>Учебный год</th>
+          <th>Итоговый балл</th>
+          <th>Итоговая отметка</th>
+          <th>Обновлено</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of summary.finals">
+          <td>{{ f.disciplineName }}</td>
+          <td>{{ f.semesterNumber }}</td>
+          <td>{{ f.academicYearStart }}/{{ f.academicYearEnd }}</td>
+          <td>{{ f.finalScore ?? '—' }}</td>
+          <td>{{ f.finalMark ?? '—' }}</td>
+          <td>{{ f.updatedAt | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

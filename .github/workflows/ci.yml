@@ -1,0 +1,132 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  backend-lint:
+    name: Backend Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore WebStudents/WebStudents.sln
+
+      - name: Lint (dotnet format)
+        run: dotnet format WebStudents/WebStudents.sln --verify-no-changes --severity warn
+
+  backend-unit-tests:
+    name: Backend Unit Tests
+    runs-on: ubuntu-latest
+    needs: backend-lint
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore WebStudents/WebStudents.sln
+
+      - name: Test
+        run: dotnet test WebStudents/WebStudents.sln --configuration Release --logger "trx;LogFileName=unit-tests.trx" --results-directory ./TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-unit-test-results
+          path: TestResults
+
+  release-report:
+    name: Release Report
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    needs: [backend-lint, backend-unit-tests]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build release report
+        run: |
+          mkdir -p out
+          {
+            echo "# Release Report"
+            echo
+            echo "- Repository: ${{ github.repository }}"
+            echo "- Tag: ${{ github.event.release.tag_name }}"
+            echo "- Published at: ${{ github.event.release.published_at }}"
+            echo "- Commit: ${{ github.sha }}"
+            echo "- Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo "## Included commits"
+            git log -n 20 --pretty=format:'- %h %s (%an)'
+          } > out/release-report.md
+
+      - name: Upload release report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-report
+          path: out/release-report.md
+
+      - name: Update README release section
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          git fetch origin "$DEFAULT_BRANCH"
+          git checkout "$DEFAULT_BRANCH"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          readme = Path("README.md")
+          report = Path("out/release-report.md").read_text(encoding="utf-8").strip()
+
+          start = "<!-- RELEASE_REPORT_START -->"
+          end = "<!-- RELEASE_REPORT_END -->"
+          body = readme.read_text(encoding="utf-8")
+
+          if start not in body or end not in body:
+            raise SystemExit("README markers for release report not found.")
+
+          before = body.split(start)[0]
+          after = body.split(end)[1]
+          updated = f"{before}{start}\n\n{report}\n\n{end}{after}"
+          readme.write_text(updated, encoding="utf-8")
+          PY
+
+          if git diff --quiet README.md; then
+            echo "README already up to date"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "docs: update release report in README for ${{ github.event.release.tag_name }}"
+            git push origin "$DEFAULT_BRANCH"
+          fi
+
+      - name: Append to job summary
+        run: cat out/release-report.md >> $GITHUB_STEP_SUMMARY

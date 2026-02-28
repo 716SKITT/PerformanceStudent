@@ -1,0 +1,68 @@
+.card {
+  background: #fff;
+  border: 1px solid #dbe7ff;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.toolbar select {
+  min-width: 320px;
+  flex: 1;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e5edff;
+  padding: 0.55rem;
+  text-align: left;
+}
+
+thead th {
+  background: #f2f7ff;
+}
+
+.empty {
+  color: #475569;
+  margin: 0.8rem 0;
+}
+
+.error {
+  color: #b91c1c;
+  margin-bottom: 0.8rem;
+}
+
+.students-preview {
+  margin-top: 1rem;
+  background: #f8fbff;
+  border: 1px solid #e0ebff;
+  border-radius: 10px;
+  padding: 0.8rem;
+}
+
+.students-preview h4 {
+  margin-bottom: 0.45rem;
+}
+
+.students-preview p {
+  color: #334155;
+  margin-bottom: 0.2rem;
+}
+
+@media (max-width: 900px) {
+  .toolbar select {
+    min-width: 100%;
+  }
+}

@@ -1,0 +1,31 @@
+<div class="container">
+<h2 class="page-title">Студенты по группам</h2>
+
+<div class="toolbar card">
+  <label>Группа</label>
+  <select [(ngModel)]="selectedGroupId">
+    <option value="">Все группы</option>
+    <option *ngFor="let g of groups" [value]="g.id">{{ g.name }}</option>
+  </select>
+</div>
+
+<div class="list-wrapper">
+  <div class="student-row student-header">
+    <span>Имя</span>
+    <span>Фамилия</span>
+    <span>Группа</span>
+    <span>Курс</span>
+    <span>Пол</span>
+    <span>Дата рождения</span>
+  </div>
+
+  <div class="student-row" *ngFor="let student of visibleStudents()">
+    <span>{{ student.firstName }}</span>
+    <span>{{ student.lastName }}</span>
+    <span>{{ getGroupName(student) }}</span>
+    <span>{{ getCourseName(student.courseId) }}</span>
+    <span>{{ student.gender === 0 ? 'Ж' : 'М' }}</span>
+    <span>{{ student.dateOfBirth | date: 'longDate' }}</span>
+  </div>
+</div>
+</div>

@@ -1,0 +1,36 @@
+import { Component } from '@angular/core';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.css']
+})
+export class NavbarComponent {
+  constructor(public auth: AuthService, private router: Router) {}
+
+  get role(): string | null {
+    return this.auth.getRole();
+  }
+
+  get isAdmin(): boolean {
+    return this.role === 'Admin';
+  }
+
+  get isProfessor(): boolean {
+    return this.role === 'Professor';
+  }
+
+  get isStudent(): boolean {
+    return this.role === 'Student';
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+}

@@ -1,0 +1,41 @@
+<div class="container">
+  <h2 class="page-title">Оценки</h2>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="toolbar card">
+    <label>Назначение дисциплины</label>
+    <select [(ngModel)]="selectedOfferingId" (change)="loadData()">
+      <option value="">Все</option>
+      <option *ngFor="let o of offerings" [value]="o.id">{{ offeringLabel(o) }}</option>
+    </select>
+  </div>
+
+  <form *ngIf="isProfessor" (ngSubmit)="addGrade()" class="form card">
+    <select [(ngModel)]="studentId" name="studentId" required>
+      <option value="">Выберите студента</option>
+      <option *ngFor="let s of students" [value]="s.id">{{ s.lastName }} {{ s.firstName }}</option>
+    </select>
+
+    <select [(ngModel)]="assignmentId" name="assignmentId" required>
+      <option value="">Выберите задание</option>
+      <option *ngFor="let a of assignments" [value]="a.id">{{ a.title }}</option>
+    </select>
+
+    <input [(ngModel)]="score" name="score" type="number" placeholder="Оценка" required />
+    <button type="submit">Поставить оценку</button>
+  </form>
+
+  <div class="grade-list">
+    <div class="grade-item card" *ngFor="let g of grades">
+      <div>
+        <strong>{{ getAssignmentTitle(g.assignmentId) }}</strong>
+        <div class="meta">
+          <span *ngIf="isProfessor">Студент: {{ getStudentName(g.studentId) }}</span>
+          <span *ngIf="g.assignment"> · {{ g.assignment.dueDate | date:'longDate' }}</span>
+        </div>
+        <p class="desc">Оценка: {{ g.score }}</p>
+      </div>
+    </div>
+  </div>
+</div>
