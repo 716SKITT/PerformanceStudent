@@ -1,8 +1,7 @@
 # Secrets / local env
 .env
 .env.local
-REARME2.md
-
+ARCHIVE.md
 # .NET build artifacts
 **/bin/
 **/obj/

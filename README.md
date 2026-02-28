@@ -1,19 +1,46 @@
 # PerformanceStudent
 
-Веб-приложение для учета учебного процесса: структура обучения, задания, оценки, посещаемость, ведомости и итоговые результаты.
+Веб-приложение для учета учебного процесса СПО: структура обучения, задания, оценки, посещаемость, ведомости и итоговые результаты.
+
+## CI и качество
+
+- GitHub Actions workflow: `.github/workflows/ci.yml`
+- Проверки в CI:
+  - backend lint: `dotnet format --verify-no-changes`
+  - backend unit tests: `dotnet test`
+
+## Отчет по релизу
+
+Блок ниже обновляется автоматически при публикации GitHub Release workflow-ом `release-report`.
+
+<!-- RELEASE_REPORT_START -->
+
+_Отчет появится после первого опубликованного релиза._
+
+<!-- RELEASE_REPORT_END -->
 
 ## Стек
 
 - Backend: ASP.NET Core 8, EF Core, PostgreSQL
-- Frontend: Angular 19
+- Frontend: Angular 19 (`WebStudentsUI`)
 - Оркестрация: Docker Compose
-- Метрики: Prometheus endpoint на `/metrics`
+- Метрики: Prometheus endpoint на `GET /metrics`
+
+## Структура репозитория
+
+- `WebStudents/` — backend API
+  - solution: `WebStudents/WebStudents.sln`
+  - project: `WebStudents/WebStudents.csproj`
+- `WebStudentsUI/` — frontend Angular
+- `db/datainstall.sql` — полный reset + демо-данные
+- `scripts/datainstall.sh` — запуск datainstall в контейнере PostgreSQL
+- `docker-compose.yml` — инфраструктура проекта
 
 ## Основной функционал
 
 - Аутентификация и ролевая модель (`Admin`, `Professor`, `Student`)
 - Учебная структура:
-  - учебные годы, семестры
+  - учебные годы и семестры
   - группы
   - дисциплины
   - назначения дисциплин на группу/семестр/преподавателя
@@ -42,9 +69,9 @@
 - `GradeSheet` — ведомость по назначению
 - `FinalGrade` — итоговая оценка студента в ведомости
 
-## Быстрый старт
+## Быстрый старт (Docker)
 
-1. Скопировать переменные окружения:
+1. Создать `.env` из шаблона:
 
 ```bash
 cp .env.example .env
@@ -72,7 +99,7 @@ docker compose up -d --build
 ./scripts/datainstall.sh
 ```
 
-Альтернатива через compose profile:
+Альтернатива:
 
 ```bash
 docker compose --profile tools run --rm datainstall
@@ -88,6 +115,23 @@ docker compose --profile tools run --rm datainstall
   - `prof_marina / prof123`
 - Students: `stud_* / stud123`
 
+## Локальная сборка без Docker (опционально)
+
+Backend:
+
+```bash
+cd WebStudents
+dotnet build WebStudents.sln
+```
+
+Frontend:
+
+```bash
+cd WebStudentsUI
+npm ci
+npm run build
+```
+
 ## Переменные окружения
 
 См. `.env.example`:
@@ -97,9 +141,3 @@ docker compose --profile tools run --rm datainstall
 - `API_PORT`, `ASPNETCORE_ENVIRONMENT`
 - `FRONTEND_PORT`
 - `DB_SERVICE`
-
-## Примечания
-
-- Dockerfile backend/frontend переведены на multi-stage build.
-- Nginx-конфигурация удалена, т.к. не используется.
-- Кэш/артефакты сборки (`node_modules`, `dist`, `.angular`, `bin`, `obj`) не должны попадать в git.

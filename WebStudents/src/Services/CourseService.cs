@@ -18,7 +18,7 @@ public class CourseService
         _context.Course
             .Include(c => c.Students)
             .FirstOrDefault(c => c.Id == id);
-            
+
     public void AddCourse(Course course)
     {
         _context.Course.Add(course);
