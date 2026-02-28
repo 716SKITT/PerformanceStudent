@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace StudentsPerformance.Models;
+
 public class Course
 {
     [Key]
