@@ -15,7 +15,32 @@
 
 <!-- RELEASE_REPORT_START -->
 
-_Отчет появится после первого опубликованного релиза._
+# Release Report
+
+- Repository: 716SKITT/PerformanceStudent
+- Tag: 1.0.0
+- Published at: 2026-02-28T14:51:21Z
+- Commit: 2c2ad713e6d378045725d270188bca43ba1923f1
+- Workflow run: https://github.com/716SKITT/PerformanceStudent/actions/runs/22522961044
+
+## Included commits
+- 2c2ad71 Merge pull request #8 from 716SKITT/hotfix/actions-permissions (716Skitt)
+- fecda4f refactoring (linter) (PavlenkoEA)
+- 2a9a3c6 Merge pull request #6 from 716SKITT/hotfix/actions-permissions (716Skitt)
+- 0c56418 fix actions permissions n2 (PavlenkoEA)
+- 23848b9 Merge pull request #4 from 716SKITT/hotfix/actions-permissions (716Skitt)
+- 505ce59 fix actions permissions (PavlenkoEA)
+- 5eb7fd4 Merge pull request #1 from 716SKITT/feature/rethinking-entities (716Skitt)
+- 1fcfdd5 unit test & github actions (PavlenkoEA)
+- c8ed31c added business entities, changed ui-ux (PavlenkoEA)
+- b600cd7 Delete WebStudents/wwwroot directory (716Skitt)
+- d620dda Delete WebStudents/obj directory (716Skitt)
+- 0493ee4 Delete WebStudents/bin/Debug/net8.0 directory (716Skitt)
+- 42bd5c3 Delete WebStudents/Pages directory (716Skitt)
+- 26232f0 fix: rebase env & add: CORS (Egor Pavlenko)
+- 24dd706 swagger (Egor Pavlenko)
+- f7d0dc5 review html (Egor Pavlenko)
+- e65e50e first commit (Egor Pavlenko)
 
 <!-- RELEASE_REPORT_END -->
 
