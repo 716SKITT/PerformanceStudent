@@ -24,15 +24,19 @@ public class Student
     [Required]
     public DateTime DateOfBirth { get; set; }
 
-    [Required]
-    public int CourseId { get; set; }
+    public int? CourseId { get; set; }
 
     [ForeignKey("CourseId")]
     public Course? Course { get; set; }
 
+    public Guid? StudentGroupId { get; set; }
+
+    [ForeignKey(nameof(StudentGroupId))]
+    public StudentGroup? StudentGroup { get; set; }
+
     public Student() { }
 
-    public Student(string firstName, string lastName, DateTime dateOfBirth, Genders gender, int courseId)
+    public Student(string firstName, string lastName, DateTime dateOfBirth, Genders gender, int? courseId)
     {
         Id = Guid.NewGuid();
         FirstName = firstName;

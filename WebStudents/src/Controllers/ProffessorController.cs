@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using WebStudents.src.Services;
 using StudentsPerformance.Models;
+using WebStudents.src.Auth;
+using WebStudents.src.Services;
 
 namespace WebStudents.src.Controllers;
 
@@ -22,7 +23,7 @@ public class ProffessorController : ControllerBase
         return Ok(list);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public IActionResult Get(Guid id)
     {
         var professor = _proffessorService.GetById(id);
@@ -33,13 +34,19 @@ public class ProffessorController : ControllerBase
     [HttpPost]
     public IActionResult Add([FromBody] Proffessor proffessor)
     {
+        var forbid = this.RequireRoles("Admin");
+        if (forbid != null) return forbid;
+
         _proffessorService.Add(proffessor);
         return Ok();
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:guid}")]
     public IActionResult Update(Guid id, [FromBody] Proffessor updated)
     {
+        var forbid = this.RequireRoles("Admin");
+        if (forbid != null) return forbid;
+
         var existing = _proffessorService.GetById(id);
         if (existing == null) return NotFound();
 
@@ -48,9 +55,12 @@ public class ProffessorController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public IActionResult Delete(Guid id)
     {
+        var forbid = this.RequireRoles("Admin");
+        if (forbid != null) return forbid;
+
         _proffessorService.Delete(id);
         return Ok();
     }

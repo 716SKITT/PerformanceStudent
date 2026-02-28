@@ -22,6 +22,23 @@ namespace WebStudents.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("StudentsPerformance.Models.AcademicYear", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("EndYear")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StartYear")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AcademicYear", (string)null);
+                });
+
             modelBuilder.Entity("StudentsPerformance.Models.Assignment", b =>
                 {
                     b.Property<int>("Id")
@@ -30,11 +47,14 @@ namespace WebStudents.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourseId")
+                    b.Property<int?>("CourseId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("DisciplineOfferingId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("timestamp with time zone");
@@ -46,6 +66,8 @@ namespace WebStudents.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("DisciplineOfferingId");
 
                     b.ToTable("Assignment", (string)null);
                 });
@@ -61,6 +83,9 @@ namespace WebStudents.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("DisciplineOfferingId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsPresent")
                         .HasColumnType("boolean");
 
@@ -70,6 +95,9 @@ namespace WebStudents.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("StudentId");
+
+                    b.HasIndex("DisciplineOfferingId", "StudentId", "Date")
+                        .IsUnique();
 
                     b.ToTable("Attendance", (string)null);
                 });
@@ -92,6 +120,92 @@ namespace WebStudents.Migrations
                     b.ToTable("Course", (string)null);
                 });
 
+            modelBuilder.Entity("StudentsPerformance.Models.Discipline", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ControlType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Hours")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Discipline", (string)null);
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.DisciplineOffering", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DisciplineId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProffessorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SemesterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StudentGroupId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DisciplineId");
+
+                    b.HasIndex("ProffessorId");
+
+                    b.HasIndex("SemesterId");
+
+                    b.HasIndex("StudentGroupId", "SemesterId", "DisciplineId", "ProffessorId")
+                        .IsUnique();
+
+                    b.ToTable("DisciplineOffering", (string)null);
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.FinalGrade", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FinalMark")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<decimal?>("FinalScore")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("GradeSheetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("GradeSheetId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("FinalGrade", (string)null);
+                });
+
             modelBuilder.Entity("StudentsPerformance.Models.Grade", b =>
                 {
                     b.Property<int>("Id")
@@ -102,6 +216,9 @@ namespace WebStudents.Migrations
 
                     b.Property<int>("AssignmentId")
                         .HasColumnType("integer");
+
+                    b.Property<Guid?>("DisciplineOfferingId")
+                        .HasColumnType("uuid");
 
                     b.Property<double>("Score")
                         .HasColumnType("double precision");
@@ -115,7 +232,34 @@ namespace WebStudents.Migrations
 
                     b.HasIndex("StudentId");
 
+                    b.HasIndex("DisciplineOfferingId", "StudentId");
+
                     b.ToTable("Grade", (string)null);
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.GradeSheet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("DisciplineOfferingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DisciplineOfferingId");
+
+                    b.ToTable("GradeSheet", (string)null);
                 });
 
             modelBuilder.Entity("StudentsPerformance.Models.Proffessor", b =>
@@ -124,7 +268,7 @@ namespace WebStudents.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("CourseId")
+                    b.Property<int?>("CourseId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("DateOfBirth")
@@ -153,13 +297,32 @@ namespace WebStudents.Migrations
                     b.ToTable("Proffessor", (string)null);
                 });
 
+            modelBuilder.Entity("StudentsPerformance.Models.Semester", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AcademicYearId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.ToTable("Semester", (string)null);
+                });
+
             modelBuilder.Entity("StudentsPerformance.Models.Student", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("CourseId")
+                    b.Property<int?>("CourseId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("DateOfBirth")
@@ -181,11 +344,40 @@ namespace WebStudents.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<Guid?>("StudentGroupId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
 
+                    b.HasIndex("StudentGroupId");
+
                     b.ToTable("Student", (string)null);
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.StudentGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AcademicYearId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("StudyYear")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.ToTable("StudentGroup", (string)null);
                 });
 
             modelBuilder.Entity("StudentsPerformance.Models.UserAccount", b =>
@@ -219,20 +411,86 @@ namespace WebStudents.Migrations
                 {
                     b.HasOne("StudentsPerformance.Models.Course", "Course")
                         .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourseId");
+
+                    b.HasOne("StudentsPerformance.Models.DisciplineOffering", "DisciplineOffering")
+                        .WithMany("Assignments")
+                        .HasForeignKey("DisciplineOfferingId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Course");
+
+                    b.Navigation("DisciplineOffering");
                 });
 
             modelBuilder.Entity("StudentsPerformance.Models.Attendance", b =>
                 {
+                    b.HasOne("StudentsPerformance.Models.DisciplineOffering", "DisciplineOffering")
+                        .WithMany("Attendances")
+                        .HasForeignKey("DisciplineOfferingId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("StudentsPerformance.Models.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DisciplineOffering");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.DisciplineOffering", b =>
+                {
+                    b.HasOne("StudentsPerformance.Models.Discipline", "Discipline")
+                        .WithMany("DisciplineOfferings")
+                        .HasForeignKey("DisciplineId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentsPerformance.Models.Proffessor", "Proffessor")
+                        .WithMany("DisciplineOfferings")
+                        .HasForeignKey("ProffessorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentsPerformance.Models.Semester", "Semester")
+                        .WithMany("DisciplineOfferings")
+                        .HasForeignKey("SemesterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentsPerformance.Models.StudentGroup", "StudentGroup")
+                        .WithMany("DisciplineOfferings")
+                        .HasForeignKey("StudentGroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Discipline");
+
+                    b.Navigation("Proffessor");
+
+                    b.Navigation("Semester");
+
+                    b.Navigation("StudentGroup");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.FinalGrade", b =>
+                {
+                    b.HasOne("StudentsPerformance.Models.GradeSheet", "GradeSheet")
+                        .WithMany("FinalGrades")
+                        .HasForeignKey("GradeSheetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StudentsPerformance.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GradeSheet");
 
                     b.Navigation("Student");
                 });
@@ -245,6 +503,11 @@ namespace WebStudents.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("StudentsPerformance.Models.DisciplineOffering", "DisciplineOffering")
+                        .WithMany("Grades")
+                        .HasForeignKey("DisciplineOfferingId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("StudentsPerformance.Models.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
@@ -253,7 +516,20 @@ namespace WebStudents.Migrations
 
                     b.Navigation("Assignment");
 
+                    b.Navigation("DisciplineOffering");
+
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.GradeSheet", b =>
+                {
+                    b.HasOne("StudentsPerformance.Models.DisciplineOffering", "DisciplineOffering")
+                        .WithMany("GradeSheets")
+                        .HasForeignKey("DisciplineOfferingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DisciplineOffering");
                 });
 
             modelBuilder.Entity("StudentsPerformance.Models.Proffessor", b =>
@@ -261,10 +537,20 @@ namespace WebStudents.Migrations
                     b.HasOne("StudentsPerformance.Models.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.Semester", b =>
+                {
+                    b.HasOne("StudentsPerformance.Models.AcademicYear", "AcademicYear")
+                        .WithMany("Semesters")
+                        .HasForeignKey("AcademicYearId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Course");
+                    b.Navigation("AcademicYear");
                 });
 
             modelBuilder.Entity("StudentsPerformance.Models.Student", b =>
@@ -272,14 +558,76 @@ namespace WebStudents.Migrations
                     b.HasOne("StudentsPerformance.Models.Course", "Course")
                         .WithMany("Students")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("StudentsPerformance.Models.StudentGroup", "StudentGroup")
+                        .WithMany("Students")
+                        .HasForeignKey("StudentGroupId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Course");
+
+                    b.Navigation("StudentGroup");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.StudentGroup", b =>
+                {
+                    b.HasOne("StudentsPerformance.Models.AcademicYear", "AcademicYear")
+                        .WithMany("StudentGroups")
+                        .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AcademicYear");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.AcademicYear", b =>
+                {
+                    b.Navigation("Semesters");
+
+                    b.Navigation("StudentGroups");
                 });
 
             modelBuilder.Entity("StudentsPerformance.Models.Course", b =>
                 {
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.Discipline", b =>
+                {
+                    b.Navigation("DisciplineOfferings");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.DisciplineOffering", b =>
+                {
+                    b.Navigation("Assignments");
+
+                    b.Navigation("Attendances");
+
+                    b.Navigation("GradeSheets");
+
+                    b.Navigation("Grades");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.GradeSheet", b =>
+                {
+                    b.Navigation("FinalGrades");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.Proffessor", b =>
+                {
+                    b.Navigation("DisciplineOfferings");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.Semester", b =>
+                {
+                    b.Navigation("DisciplineOfferings");
+                });
+
+            modelBuilder.Entity("StudentsPerformance.Models.StudentGroup", b =>
+                {
+                    b.Navigation("DisciplineOfferings");
+
                     b.Navigation("Students");
                 });
 #pragma warning restore 612, 618

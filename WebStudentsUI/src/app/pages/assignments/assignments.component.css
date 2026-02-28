@@ -1,0 +1,57 @@
+.toolbar,
+.form,
+.assignment-item {
+  margin-bottom: 0.8rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #dbe7ff;
+  border-radius: 12px;
+  padding: 0.9rem;
+}
+
+.toolbar {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.assignment-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.assignment-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.meta {
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.desc {
+  margin-top: 0.35rem;
+  color: #334155;
+}
+
+.error {
+  margin-bottom: 0.7rem;
+  color: #b91c1c;
+}
+
+@media (max-width: 900px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+}

@@ -25,15 +25,16 @@ public class Proffessor
     [Required]
     public DateTime DateOfBirth { get; set; }
 
-    [Required]
-    public int CourseId { get; set; }
+    public int? CourseId { get; set; }
 
     [ForeignKey("CourseId")]
     public Course? Course { get; set; }
 
+    public ICollection<DisciplineOffering> DisciplineOfferings { get; set; } = new List<DisciplineOffering>();
+
     public Proffessor() { }
 
-    public Proffessor(string firstName, string lastName, DateTime dateOfBirth, Genders gender, int courseId)
+    public Proffessor(string firstName, string lastName, DateTime dateOfBirth, Genders gender, int? courseId)
     {
         Id = Guid.NewGuid();
         FirstName = firstName;

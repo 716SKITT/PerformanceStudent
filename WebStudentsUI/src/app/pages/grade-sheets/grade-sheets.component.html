@@ -1,0 +1,68 @@
+<div class="container">
+  <h2 class="page-title">Зачетные ведомости</h2>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div *ngIf="isProfessor" class="card">
+    <div class="toolbar">
+      <select [(ngModel)]="selectedOfferingId" (change)="onOfferingChange()">
+        <option value="">Выберите назначение дисциплины</option>
+        <option *ngFor="let o of offerings" [value]="o.id">
+          {{ o.discipline?.name }} · {{ o.studentGroup?.name }} · семестр {{ o.semester?.number }}
+        </option>
+      </select>
+
+      <button (click)="createSheet()" [disabled]="!selectedOfferingId">Создать ведомость</button>
+    </div>
+
+    <div class="toolbar" *ngIf="sheets.length > 0">
+      <select [(ngModel)]="selectedSheetId" (change)="onSheetChange()">
+        <option value="">Выберите ведомость</option>
+        <option *ngFor="let s of sheets" [value]="s.id">
+          {{ s.createdAt | date:'short' }} · {{ statusLabel(s.status) }}
+        </option>
+      </select>
+
+      <button (click)="recalculate()" [disabled]="!selectedSheetId || !canEditFinals()">Пересчитать</button>
+      <button (click)="closeSheet()" [disabled]="!selectedSheetId || !canEditFinals()">Закрыть</button>
+    </div>
+
+    <div *ngIf="selectedSheetId && finals.length === 0" class="empty">
+      Нет итогов. Нажмите «Пересчитать».
+    </div>
+
+    <table *ngIf="finals.length > 0">
+      <thead>
+        <tr>
+          <th>Студент</th>
+          <th>Итоговый балл</th>
+          <th>Итоговая оценка</th>
+          <th>Обновлено</th>
+          <th *ngIf="canEditFinals()">Действие</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of finals">
+          <td>{{ getStudentName(f.studentId) }}</td>
+          <td>
+            <input type="number" step="0.01" [(ngModel)]="manualScore[f.studentId]" [disabled]="!canEditFinals()" />
+          </td>
+          <td>
+            <input [(ngModel)]="manualMark[f.studentId]" [disabled]="!canEditFinals()" />
+          </td>
+          <td>{{ f.updatedAt | date:'short' }}</td>
+          <td *ngIf="canEditFinals()">
+            <button (click)="saveManual(f.studentId)">Сохранить</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="students-preview" *ngIf="selectedOfferingId">
+      <h4>Студенты группы</h4>
+      <p *ngFor="let s of studentsForSelectedOffering()">
+        {{ s.lastName }} {{ s.firstName }}
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.9rem 1.25rem;
+  background: white;
+  border-bottom: 1px solid #dbe7ff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 1rem;
+}
+
+.logo {
+  position: absolute;
+  left: 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  letter-spacing: 0.02em;
+}
+
+.nav-center {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nav-center a {
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background-color: #eff6ff;
+  color: #1e40af;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.nav-center a:hover {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.nav-center a.active {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+.nav-right {
+  position: absolute;
+  right: 1.25rem;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.username {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.nav-right button {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .logo,
+  .nav-right {
+    position: static;
+  }
+
+  .nav-right {
+    width: 100%;
+    justify-content: center;
+  }
+}
