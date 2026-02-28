@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StudentsPerformance.Models;
+
 public class Student
 {
     [Key]
